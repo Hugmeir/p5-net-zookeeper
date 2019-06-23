@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use File::Spec;
-use Test::More tests => 40;
+use Test::More tests => 39;
 
 BEGIN { use_ok('Net::ZooKeeper', qw(:all)) };
 
@@ -37,7 +37,7 @@ SKIP: {
     my $path = $zkh->create($node_path, 'foo',
                             'acl' => ZOO_OPEN_ACL_UNSAFE) if (defined($zkh));
 
-    skip 'no connection to ZooKeeper', 38 unless
+    skip 'no connection to ZooKeeper', 37 unless
         (defined($path) and $path eq $node_path);
 
 
@@ -162,11 +162,6 @@ SKIP: {
     ok((!defined($num_acl_entries) and $zkh->get_error() == ZNONODE and
         $! eq ''),
        'get_acl(): undef returned for non-extant node');
-
-    @acl = ('abc');
-    @acl = $zkh->get_acl($acl_node_path);
-    is_deeply(\@acl, $digest_acl,
-              'get_acl(): retrieved digest ACL');
 
     my $stat = $zkh->stat();
 

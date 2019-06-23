@@ -1283,10 +1283,10 @@ void
 zk_create(zkh, path, buf, ...)
         Net::ZooKeeper zkh
         char *path
-        char *buf; buf = (char *) SvPV($arg, buf_len);
+        char *buf; buf = SvOK($arg) ? (char *) SvPV($arg, buf_len) : NULL;
     PREINIT:
         zk_t *zk;
-        STRLEN buf_len;
+        STRLEN buf_len = 0;
         int flags = 0;
         char *path_buf;
         int path_buf_len;
@@ -1353,7 +1353,7 @@ zk_create(zkh, path, buf, ...)
         Newxz(path_buf, path_buf_len, char);
 
         errno = 0;
-        ret = zoo_create(zk->handle, path, buf, buf_len,
+        ret = zoo_create(zk->handle, path, buf, buf ? buf_len : -1,
                          (acl_arr ? &acl : NULL), flags,
                          path_buf, path_buf_len);
 
@@ -1760,12 +1760,12 @@ void
 zk_set(zkh, path, buf, ...)
         Net::ZooKeeper zkh
         char *path
-        char *buf; buf = (char *) SvPV($arg, buf_len);
+        char *buf; buf = SvOK($arg) ? (char *) SvPV($arg, buf_len) : NULL;
     PREINIT:
         zk_t *zk;
         int version = -1;
         zk_stat_t *stat = NULL;
-        STRLEN buf_len;
+        STRLEN buf_len = 0;
         int i, ret;
     PPCODE:
         zk = _zk_get_handle_outer(aTHX_ zkh);
@@ -1812,7 +1812,7 @@ zk_set(zkh, path, buf, ...)
         }
 
         errno = 0;
-        ret = zoo_set2(zk->handle, path, buf, buf_len, version, stat);
+        ret = zoo_set2(zk->handle, path, buf, buf ? buf_len : -1, version, stat);
 
         zk->last_ret = ret;
         zk->last_errno = errno;
